@@ -8,11 +8,11 @@
   },
   "sources": {
     "openmaptiles": {
-       "url": "http:///localhost:8080/meta-edinburgh.json",
+       "url": "meta-edinburgh.json",
       "type": "vector"
     }
   },
-  "glyphs": "http:///localhost:8080/fonts/{fontstack}/{range}.pbf",
+  "glyphs": "fonts/{fontstack}/{range}.pbf",
   "layers": [
     {
       "id": "background",
