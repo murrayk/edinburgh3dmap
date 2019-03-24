@@ -19,9 +19,10 @@
         var map = new mapboxgl.Map({
             container: 'map',
             style: 'style-edinburgh.json',
-            center: [ -3.33975,55.873264],
+            center: [ -3.15,55.955],
             pitch: 60,
-            zoom: 10
+            zoom: 17,
+            preserveDrawingBuffer: true
         });
 
 
@@ -53,8 +54,58 @@ map.on('load', function() {
             'fill-extrusion-opacity': 0.5
         }
     });
+
+	map.on('click', 'room-extrusion', function (e) {
+    var c = map.getCanvas().getContext('webgl');
+
+    var pixels = new Uint8Array(c.drawingBufferWidth * c.drawingBufferHeight * 4);
+// gl.readPixels(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
+// console.log(pixels)
+//     var pixels = new Uint8Array(
+//         4 * c.drawingBufferWidth * c.drawingBufferHeight
+//     );
+    c.readPixels(
+        0,
+        0,
+        c.drawingBufferWidth,
+        c.drawingBufferHeight,
+        c.RGBA,
+        c.UNSIGNED_BYTE,
+        pixels
+    );
+    // And here's components of a pixel on (x, y):
+    var pixelR = pixels[4 * (e.point.y * c.drawingBufferWidth + e.point.x)];
+    var pixelG = pixels[4 * (e.point.y  * c.drawingBufferWidth + e.point.x) + 1];
+    var pixelB = pixels[4 * (e.point.y  * c.drawingBufferWidth + e.point.x) + 2];
+    var pixelA = pixels[4 * (e.point.y  * c.drawingBufferWidth + e.point.x) + 3];
+    console.log('R' +pixelR + 'G' + pixelG + 'B' + pixelB + 'A' + pixelA)
+		new mapboxgl.Popup()
+		.setLngLat(e.lngLat)
+		.setHTML(e.features[0].properties.name)
+		.addTo(map);
+	});
+
+map.on('mouseenter', 'room-extrusion', function () {
+map.getCanvas().style.cursor = 'pointer';
+
 });
 
+// Change it back to a pointer when it leaves.
+map.on('mouseleave', 'room-extrusion', function () {
+map.getCanvas().style.cursor = '';
+});
+});
+
+
+
+
+
+
+function rgbToHex(r, g, b) {
+    if (r > 255 || g > 255 || b > 255)
+        throw "Invalid color component";
+    return ((r << 16) | (g << 8) | b).toString(16);
+}
 
 // map.on('style.load', function() {
 //     map.addLayer({
